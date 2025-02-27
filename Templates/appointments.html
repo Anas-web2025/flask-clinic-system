@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+   <style>
+    .status-column {
+        width: 180px;
+        white-space: nowrap;  /* Ensures text doesn't wrap to the next line */
+    }
+</style>
+ <style>
+    .clinicdoctor-column {
+        width: 180px;
+        white-space: nowrap;  /* Ensures text doesn't wrap to the next line */
+    }
+</style>
+</style>
+ <style>
+    .reason-column {
+        width: 180px;
+        white-space: nowrap;  /* Ensures text doesn't wrap to the next line */
+    }
+</style>
+</style>
+ <style>
+    .patient-column {
+        width: 180px;
+        white-space: nowrap;  /* Ensures text doesn't wrap to the next line */
+    }
+</style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Appointments List</h2>
+
+        <!-- ✅ Filter by Date -->
+        <form method="GET" action="/appointments" class="p-3 border rounded bg-light">
+            <label for="appointment_date">Select Date:</label>
+            <input type="date" name="appointment_date" class="form-control mb-2" value="{{ selected_date }}">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+        <table class="table table-bordered mt-3">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th class="patient-column">Patient</th>
+            <th class="clinicdoctor-column">Clinic Doctor</th>
+            <th class="reason-column">Reason</th>
+            <th class="status-column">Status</th>
+            <th>Payment</th>
+            <th>Payment Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for appointment in appointments %}
+        <tr>
+            <form method="POST" action="/update_appointment/{{ appointment[0] }}">
+            <input type="hidden" name="appointment_id" value="{{ appointment[0] }}">
+            <input type="hidden" name="selected_date" value="{{ selected_date }}">
+
+            <td>{{ appointment[0] }}</td>
+            <td><input type="date" name="appointment_date" value="{{ appointment[3] }}" class="form-control"></td>
+            <td><input type="time" name="appointment_time" value="{{ appointment[4] }}" class="form-control"></td>
+
+            <!-- Patient Name (bold) -->
+            <td><strong>{{ appointment[1] }} {{ appointment[2] }}</strong></td>
+
+            <td><input type="text" name="clinic_doctor" value="{{ appointment[5] }}" class="form-control"></td>
+            <td><input type="text" name="reason" value="{{ appointment[6] }}" class="form-control"></td>
+
+            <td>
+                <select name="status" class="form-control fw-bold">
+                    <option value="Scheduled" {% if appointment[8] == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+                    <option value="Check-in" {% if appointment[8] == 'Check-in' %}selected{% endif %}>Check-in</option>
+                    <option value="Cancelled" {% if appointment[8] == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    <option value="Completed" {% if appointment[8] == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Rescheduled" {% if appointment[8] == 'Rescheduled' %}selected{% endif %}>Rescheduled</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="payment_taken" class="form-control">
+                    <option value="No" {% if appointment[9] == 'No' %}selected{% endif %}>No</option>
+                    <option value="Yes" {% if appointment[9] == 'Yes' %}selected{% endif %}>Yes</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="payment_type" class="form-control">
+                    <option value="Cash" {% if appointment[10] == 'Cash' %}selected{% endif %}>Cash</option>
+                    <option value="Card" {% if appointment[10] == 'Card' %}selected{% endif %}>Card</option>
+                    <option value="Online" {% if appointment[10] == 'Online' %}selected{% endif %}>Online</option>
+                    <option value="Private Insurance" {% if appointment[10] == 'Private Insurance' %}selected{% endif %}>Private Insurance</option>
+                    <option value="Public Insurance" {% if appointment[10] == 'Public Insurance' %}selected{% endif %}>Public Insurance</option>
+                </select>
+            </td>
+
+            <td><button type="submit" class="btn btn-success btn-sm">Update</button></td>
+ <form method="POST" action="/update_appointment/{{ appointment[0] }}">
+    <input type="hidden" name="appointment_id" value="{{ appointment[0] }}">
+    <input type="hidden" name="selected_date" value="{{ selected_date }}">
+    <input type="hidden" name="appointment_date" value="{{ appointment[3] }}">
+    <input type="hidden" name="appointment_time" value="{{ appointment[4] }}">
+    <input type="hidden" name="clinic_doctor" value="{{ appointment[5] }}">
+    <input type="hidden" name="reason" value="{{ appointment[6] }}">
+    <input type="hidden" name="comments" value="{{ appointment[7] }}">
+    <input type="hidden" name="status" value="{{ appointment[8] }}">
+    <input type="hidden" name="payment_taken" value="{{ appointment[9] }}">
+    <input type="hidden" name="payment_type" value="{{ appointment[10] }}">
+    
+
+        </form>
+    </tr>
+    {% endfor %}
+
+</tbody>
+</table>
+
+<!-- Pagination Controls -->
+<div>
+    {% if page > 1 %}
+        <a href="{{ url_for('appointments', appointment_date=selected_date, page=page-1) }}">Previous</a>
+    {% endif %}
+
+    Page {{ page }} of {{ total_pages }}
+
+    {% if page < total_pages %}
+        <a href="{{ url_for('appointments', appointment_date=selected_date, page=page+1) }}">Next</a>
+    {% endif %}
+</div>
+
+    </div>
+</body>
+</html>

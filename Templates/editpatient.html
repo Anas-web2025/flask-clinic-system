@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Patient</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Edit Patient</h2>
+
+        <form method="POST" action="/edit_patient/{{ patient[0] }}" class="p-3 border rounded bg-light">
+            <div class="mb-3">
+                <label>First Name:</label>
+                <input type="text" name="first_name" value="{{ patient[1] }}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Last Name:</label>
+                <input type="text" name="last_name" value="{{ patient[2] }}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Birth Date:</label>
+                <input type="date" name="birth_date" value="{{ patient[3] }}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>CNP:</label>
+                <input type="text" name="cnp" value="{{ patient[4] }}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Phone:</label>
+                <input type="text" name="phone" value="{{ patient[5] }}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Address:</label>
+                <input type="text" name="address" value="{{ patient[6] }}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Family Doctor:</label>
+                <input type="text" name="family_doctor" value="{{ patient[7] }}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Notes:</label>
+                <textarea name="notes" class="form-control">{{ patient[8] }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <a href="/view_patient/{{ patient[0] }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

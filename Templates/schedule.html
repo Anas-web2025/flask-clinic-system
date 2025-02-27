@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Appointment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Schedule an Appointment</h2>
+
+     <!-- Appointment Scheduling Form -->
+<form action="/add_appointment" method="POST" class="p-3 border rounded bg-light">
+    <h4>Book an Appointment</h4>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="patient_id">Select Patient:</label>
+            <select name="patient_id" id="patient_id" class="form-control" required>
+                <option value="" disabled>Select a Patient</option>
+                {% for patient in patients %}
+                    <option value="{{ patient[0] }}" 
+                            data-dob="{{ patient[3] }}"
+                            {% if selected_patient and selected_patient[0] == patient[0] %}selected{% endif %}>
+                        {{ patient[1] }} {{ patient[2] }} (DOB: {{ patient[3] }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="birth_date">Birth Date:</label>
+            <input type="text" id="birth_date" name="birth_date" class="form-control"
+                   value="{{ selected_patient[3] if selected_patient else '' }}" readonly>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var patientSelect = document.getElementById("patient_id");
+            var birthDateInput = document.getElementById("birth_date");
+
+            function updateBirthDate() {
+                var selectedOption = patientSelect.options[patientSelect.selectedIndex];
+                var birthDate = selectedOption.getAttribute("data-dob");
+                birthDateInput.value = birthDate ? birthDate : "";
+            }
+
+            // Update DOB when patient is selected
+            patientSelect.addEventListener("change", updateBirthDate);
+
+            // If a patient is preselected, update automatically
+            updateBirthDate();
+        });
+    </script>
+
+    <!-- Appointment Date -->
+    <label for="appointment_date">Appointment Date:</label>
+    <input type="date" name="appointment_date" class="form-control" required>
+
+    <!-- Appointment Time -->
+    <label for="appointment_time">Appointment Time:</label>
+    <input type="time" name="appointment_time" class="form-control" required>
+
+    <!-- Clinic Doctor -->
+    <label for="clinic_doctor">Clinic Doctor:</label>
+    <input type="text" name="clinic_doctor" class="form-control" required>
+
+    <!-- Reason -->
+    <label for="reason">Reason:</label>
+    <input type="text" name="reason" class="form-control">
+
+    <!-- Comments -->
+    <label for="comments">Comments:</label>
+    <textarea name="comments" class="form-control"></textarea>
+
+    <button type="submit" class="btn btn-success mt-2">Book Appointment</button>
+</form>
+

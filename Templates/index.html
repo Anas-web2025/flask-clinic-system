@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedicalHTDB - Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Patient Management System</h2>
+
+        <!-- Navigation -->
+        <div class="text-center mb-3">
+            <a href="/" class="btn btn-secondary">Home</a>
+            <a href="/appointments" class="btn btn-success">Reception: View Appointments</a>
+            <a href="/schedule_appointment" class="btn btn-warning">Schedule Appointment</a>
+</div>
+>
+
+        <!-- Search Form -->
+        <form method="GET" action="/search" class="p-3 border rounded bg-light">
+        <input type="text" name="query" placeholder="Search by Name or Phone" class="form-control mb-2">
+    
+        <label for="dob_search">Search by Birth Date:</label>
+        <input type="date" name="dob_search" class="form-control mb-2">
+    
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+        <!-- Add Patient Form -->
+        <h4 class="mt-4">Add New Patient</h4>
+        <form action="/add_patient" method="POST" class="p-3 border rounded bg-light">
+            <input type="text" name="first_name" class="form-control mb-2" placeholder="First Name" required>
+            <input type="text" name="last_name" class="form-control mb-2" placeholder="Last Name" required>
+            <input type="text" name="cnp" class="form-control mb-2" placeholder="CNP">
+            <input type="date" name="birth_date" class="form-control mb-2" required>
+            <input type="text" name="phone" class="form-control mb-2" placeholder="Phone">
+            <input type="text" name="address" class="form-control mb-2" placeholder="Address">
+            <input type="text" name="family_doctor" class="form-control mb-2" placeholder="Family Doctor">
+            <textarea name="notes" class="form-control mb-2" placeholder="Notes"></textarea>
+            <button type="submit" class="btn btn-success">Add Patient</button>
+        </form>
+
+        <!-- Patients List -->
+
+        <h4 class="mt-4">All Patients</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr class="table-primary">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Birth Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient[0] }}</td>
+                    <td>{{ patient[1] }} {{ patient[2] }}</td>
+                    <td>{{ patient[3] }}</td>
+                    <td>
+                        <a href="/view_patient/{{ patient[0] }}" class="btn btn-info">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+{% if total_pages > 1 %}
+    <div>
+        {% if page > 1 %}
+            <a href="{{ url_for('home', page=page-1) }}">Previous</a>
+        {% endif %}
+
+        Page {{ page }} of {{ total_pages }}
+
+        {% if page < total_pages %}
+            <a href="{{ url_for('home', page=page+1) }}">Next</a>
+        {% endif %}
+    </div>
+{% endif %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("patientsTable");
+            switching = true;
+            dir = "asc"; 
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Patient Management System</h2>
+
+        <!-- Navigation -->
+        <div class="text-center mb-3">
+            <a href="{{ url_for('home') }}" class="btn btn-primary">Home</a>
+            <a href="/appointments" class="btn btn-success">View Appointments</a>
+            <a href="/schedule_appointment" class="btn btn-warning">Schedule Appointment</a>
+        </div>
+
+        <!-- 🔍 Search Form -->
+        <h4>Search Patient</h4>
+        <form method="GET" action="/search" class="p-3 border rounded bg-light">
+            <input type="text" name="query" placeholder="Search by Name or Phone" class="form-control mb-2">
+            
+            <label for="dob_search">Search by Birth Date:</label>
+            <input type="date" name="dob_search" class="form-control mb-2">
+            
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        {% if searched_patients %}
+        <h4 class="mt-4">Search Results</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr class="table-primary">
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Birth Date</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in searched_patients %}
+                <tr>
+                    <td>{{ patient[0] }}</td>
+                    <td>{{ patient[1] }}</td>
+                    <td>{{ patient[2] }}</td>
+                    <td>{{ patient[3] }}</td>
+                    <td>{{ patient[4] }}</td>
+                    <td>
+                        <a href="/view_patient/{{ patient[0] }}" class="btn btn-info btn-sm">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- ➕ Add New Patient -->
+        <h4 class="mt-4">Add New Patient</h4>
+        <form action="/add_patient" method="POST" class="p-3 border rounded bg-light">
+            <input type="text" name="first_name" class="form-control mb-2" placeholder="First Name" required>
+            <input type="text" name="last_name" class="form-control mb-2" placeholder="Last Name" required>
+            <input type="text" name="cnp" class="form-control mb-2" placeholder="CNP">
+            <input type="date" name="birth_date" class="form-control mb-2" required>
+            <input type="text" name="phone" class="form-control mb-2" placeholder="Phone">
+            <input type="text" name="address" class="form-control mb-2" placeholder="Address">
+            <input type="text" name="family_doctor" class="form-control mb-2" placeholder="Family Doctor">
+            <textarea name="notes" class="form-control" placeholder="Notes"></textarea>
+
+            <button type="submit" class="btn btn-success">Add Patient</button>
+        </form>
+
+        <!-- 📋 List of All Patients -->
+        <h4 class="mt-4">All Patients</h4>
+        <table class="table table-bordered" id="patientsTable">
+            <thead>
+                <tr class="table-primary">
+                    <th>ID</th>
+                    <th onclick="sortTable(1)">First Name &#x2195;</th>
+                    <th>Last Name</th>
+                    <th onclick="sortTable(3)">Birth Date &#x2195;</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient[0] }}</td>
+                    <td>{{ patient[1] }}</td>
+                    <td>{{ patient[2] }}</td>
+                    <td>{{ patient[3] }}</td>
+                    <td>{{ patient[4] }}</td>
+                    <td>
+                        <a href="/view_patient/{{ patient[0] }}" class="btn btn-info btn-sm">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+{% if total_pages > 1 %}
+    <div>
+        {% if page > 1 %}
+            <a href="{{ url_for('home', page=page-1) }}">Previous</a>
+        {% endif %}
+
+        Page {{ page }} of {{ total_pages }}
+
+        {% if page < total_pages %}
+            <a href="{{ url_for('home', page=page+1) }}">Next</a>
+        {% endif %}
+    </div>
+{% endif %}
+</div>
+
+</body>
+</html>

@@ -1,23 +1,50 @@
 from flask import Flask, render_template, request, redirect
+
+from flask import Flask
 import pyodbc
+import os
 
 app = Flask(__name__)
 
-# Database Connection
-
-def get_db_connection():
-    return pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};'
-        'SERVER=localhost\\SQLEXPRESS;'
-        'DATABASE=MedicalHTDB;'
-        'UID=admin_user;'
-        'PWD=Admin123!;'
-        'TrustServerCertificate=yes'
-    )
-
-# Home Page
+# ✅ Default home route
 @app.route('/')
 def home():
+    return "Welcome to the Flask App!", 200
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+# ✅ Azure SQL Database Credentials
+DB_SERVER = os.getenv("DB_SERVER", "dlinkrouterlocal.database.windows.net,1433")  
+DB_NAME = os.getenv("DB_NAME", "medicalhtdb")  
+DB_USER = os.getenv("DB_USER", "CloudSAa8b76aaa")  
+DB_PASSWORD = os.getenv("DB_PASSWORD", "System2025")  
+
+def get_db_connection():
+
+    try:
+        print("\n🔍 **DEBUG: Attempting to connect to Azure SQL Server** 🔍")
+        print(f"🔹 SERVER: {DB_SERVER}")
+        print(f"🔹 DATABASE: {DB_NAME}")
+        print(f"🔹 USER: {DB_USER}")
+        print(f"🔹 PASSWORD: {DB_PASSWORD}")  # NOTE: Be careful exposing this in real logs!
+
+        conn = pyodbc.connect(
+            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+            f"SERVER={dlinkrouterlocal.database.windows.net,1433};"
+            f"DATABASE={medicalhtdb};"
+            f"UID={admin_user};"
+            f"PWD={System2025};"
+            f"Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+        )
+        print("✅ SUCCESS: Azure SQL Database connection established!")
+        return conn
+    except Exception as e:
+        print(f"❌ ERROR: Database connection failed! Reason: {e}")
+        return None
+
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
